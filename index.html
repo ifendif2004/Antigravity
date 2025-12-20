@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Contador de Pasos Pro</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <!-- Google Maps API - PLACEHOLDER KEY -->
+    <!-- Reemplaza YOUR_GOOGLE_MAPS_API_KEY con tu clave real -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="app-header">
+            <h1>Pasos<span class="highlight">Pro</span></h1>
+            <button id="view-history-btn" class="icon-btn" aria-label="Ver Historial">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Main Tracker View -->
+        <main id="tracker-view" class="view active">
+            <div class="stats-container">
+                <div class="stat-circle">
+                    <span class="label">PASOS</span>
+                    <span id="step-count" class="value">0</span>
+                </div>
+                
+                <div class="secondary-stats">
+                    <div class="stat-box">
+                        <span class="label">DISTANCIA</span>
+                        <span id="distance-display" class="value-small">0.00 km</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label">TIEMPO</span>
+                        <span id="time-display" class="value-small">00:00:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-container">
+                <button id="start-btn" class="action-btn start">
+                    INICIAR
+                </button>
+                <button id="stop-btn" class="action-btn stop hidden">
+                    DETENER
+                </button>
+            </div>
+
+            <div id="status-message" class="status-message">Listo para empezar</div>
+        </main>
+
+        <!-- History View -->
+        <main id="history-view" class="view">
+            <div class="history-header">
+                <button id="back-to-tracker-btn" class="text-btn">← Volver</button>
+                <h2>Historial</h2>
+            </div>
+            
+            <div id="history-list" class="history-list">
+                <!-- History items will be injected here -->
+                <div class="empty-state">No hay recorridos guardados aún.</div>
+            </div>
+        </main>
+
+        <!-- Map Modal (for showing details) -->
+        <div id="map-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="map-date">Detalles del Recorrido</h3>
+                    <button id="close-map-btn" class="close-btn">&times;</button>
+                </div>
+                <div id="map" class="map-container"></div>
+                <div class="modal-stats">
+                    <div class="m-stat">
+                        <span class="l">Pasos:</span> <span id="m-steps" class="v">0</span>
+                    </div>
+                    <div class="m-stat">
+                        <span class="l">Dist:</span> <span id="m-dist" class="v">0km</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Permission Overlay -->
+    <div id="permission-overlay" class="overlay hidden">
+        <div class="overlay-content">
+            <h3>Permisos Necesarios</h3>
+            <p>Para contar tus pasos, necesitamos acceso a los sensores de movimiento de tu dispositivo.</p>
+            <button id="grant-permission-btn" class="action-btn">Permitir Acceso</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
