@@ -141,12 +141,22 @@ function stopTracking() {
     saveRun();
 }
 
+function deleteRun(id) {
+    if (!confirm('¿Estás seguro de que quieres borrar este recorrido?')) return;
+
+    let history = JSON.parse(localStorage.getItem('pedometer_runs') || '[]');
+    history = history.filter(run => run.id !== id);
+    localStorage.setItem('pedometer_runs', JSON.stringify(history));
+    renderHistory();
+}
+
 // --- Pedometer Algorithm ---
-// Simple peak detection based on total acceleration magnitude
-let lastMagnitude = 0;
-let lastStepTime = 0;
-const STEP_THRESHOLD = 10.5; // Threshold in m/s^2 (gravity is ~9.8)
-const MIN_STEP_DELAY = 250; // ms
+// Improved algorithm with High-Pass Filter to remove gravity
+// and Low-Pass Filter to isolate gravity.
+let gravity = { x: 0, y: 0, z: 0 };
+const ALPHA = 0.8; // Smoothing factor for gravity
+const STEP_THRESHOLD = 2.5; // Threshold for linear acceleration magnitude (m/s^2)
+const MIN_STEP_DELAY = 300; // ms
 
 function handleMotion(event) {
     if (!isTracking) return;
@@ -154,10 +164,22 @@ function handleMotion(event) {
     const acc = event.accelerationIncludingGravity;
     if (!acc) return;
 
-    const magnitude = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+    // 1. Isolate Gravity (Low-Pass Filter)
+    gravity.x = ALPHA * gravity.x + (1 - ALPHA) * acc.x;
+    gravity.y = ALPHA * gravity.y + (1 - ALPHA) * acc.y;
+    gravity.z = ALPHA * gravity.z + (1 - ALPHA) * acc.z;
 
-    // Detect peak
-    if (magnitude > STEP_THRESHOLD && lastMagnitude <= STEP_THRESHOLD) {
+    // 2. Linear Acceleration (High-Pass Filter)
+    // Remove gravity component to get actual movement
+    const linearX = acc.x - gravity.x;
+    const linearY = acc.y - gravity.y;
+    const linearZ = acc.z - gravity.z;
+
+    // 3. Magnitude of Linear Acceleration
+    const magnitude = Math.sqrt(linearX * linearX + linearY * linearY + linearZ * linearZ);
+
+    // 4. Peak Detection with new threshold
+    if (magnitude > STEP_THRESHOLD) {
         const now = Date.now();
         if (now - lastStepTime > MIN_STEP_DELAY) {
             stepCount++;
@@ -165,7 +187,6 @@ function handleMotion(event) {
             updateDisplay();
         }
     }
-    lastMagnitude = magnitude;
 }
 
 // --- Geolocation Logic ---
@@ -248,16 +269,39 @@ function renderHistory() {
     history.forEach(run => {
         const item = document.createElement('div');
         item.className = 'history-item';
+        // Add current path check for better UX
+        const isCurrent = false;
+
         item.innerHTML = `
             <div class="h-info-row">
                 <span class="h-date">${run.date}</span>
-                <span class="h-steps">${run.steps} pasos</span>
+                <button class="delete-btn" aria-label="Borrar recorrido">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="h-row-center">
+                 <span class="h-steps">${run.steps} pasos</span>
             </div>
             <div class="h-detail-row">
                 <span>${((run.steps * 0.762) / 1000).toFixed(2)} km</span>
             </div>
         `;
-        item.addEventListener('click', () => showMapDetails(run));
+
+        // Click on item to view map
+        item.addEventListener('click', (e) => {
+            showMapDetails(run);
+        });
+
+        // Click on delete button
+        const deleteBtn = item.querySelector('.delete-btn');
+        deleteBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent opening map
+            deleteRun(run.id);
+        });
+
         elements.historyList.appendChild(item);
     });
 }

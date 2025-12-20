@@ -1,9 +1,12 @@
 :root {
     --bg-color: #0f172a;
     --card-bg: #1e293b;
-    --primary: #3b82f6; /* Blue */
-    --accent: #10b981; /* Green */
-    --danger: #ef4444; /* Red */
+    --primary: #3b82f6;
+    /* Blue */
+    --accent: #10b981;
+    /* Green */
+    --danger: #ef4444;
+    /* Red */
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
     --font-family: 'Outfit', sans-serif;
@@ -77,8 +80,15 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Tracker Styles */
@@ -101,14 +111,17 @@ body {
     justify-content: center;
     align-items: center;
     background: radial-gradient(circle at 30% 30%, #2a3855, var(--card-bg));
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     position: relative;
 }
 
 .stat-circle::after {
     content: '';
     position: absolute;
-    top: -8px; left: -8px; right: -8px; bottom: -8px;
+    top: -8px;
+    left: -8px;
+    right: -8px;
+    bottom: -8px;
     border-radius: 50%;
     border: 8px solid var(--accent);
     border-top-color: transparent;
@@ -258,6 +271,30 @@ body {
     color: var(--accent);
 }
 
+.delete-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.h-row-center {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.2rem;
+}
+
 .h-detail-row {
     font-size: 0.85rem;
     color: var(--text-muted);
@@ -269,8 +306,11 @@ body {
 .modal {
     display: none;
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
     z-index: 100;
     justify-content: center;
     align-items: center;
@@ -324,6 +364,7 @@ body {
     font-weight: 700;
     color: var(--text-main);
 }
+
 .m-stat .l {
     color: var(--text-muted);
     font-size: 0.9rem;
@@ -332,7 +373,10 @@ body {
 /* Permission Overlay */
 .overlay {
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(15, 23, 42, 0.95);
     z-index: 200;
     display: flex;
