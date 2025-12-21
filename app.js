@@ -155,7 +155,7 @@ function deleteRun(id) {
 // and Low-Pass Filter to isolate gravity.
 let gravity = { x: 0, y: 0, z: 0 };
 const ALPHA = 0.8; // Smoothing factor for gravity
-const STEP_THRESHOLD = 2.5; // Threshold for linear acceleration magnitude (m/s^2)
+const STEP_THRESHOLD = 1.5; // Threshold for linear acceleration magnitude (m/s^2)
 const MIN_STEP_DELAY = 300; // ms
 
 function handleMotion(event) {
