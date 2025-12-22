@@ -94,6 +94,8 @@ function startTracking() {
 function beginSession() {
     isTracking = true;
     stepCount = 0;
+    consecutiveSteps = 0;
+    lastStepTime = 0;
     currentPath = [];
     startTime = Date.now();
     updateDisplay();
@@ -157,6 +159,11 @@ let gravity = { x: 0, y: 0, z: 0 };
 const ALPHA = 0.8; // Smoothing factor for gravity
 const STEP_THRESHOLD = 1.5; // Threshold for linear acceleration magnitude (m/s^2)
 const MIN_STEP_DELAY = 300; // ms
+const RESET_DELAY = 2000; // ms: if no step in 2s, reset streak
+const STEPS_TO_START_COUNTING = 10; // steps required to start tracking
+
+let lastStepTime = 0;
+let consecutiveSteps = 0;
 
 function handleMotion(event) {
     if (!isTracking) return;
@@ -182,9 +189,25 @@ function handleMotion(event) {
     if (magnitude > STEP_THRESHOLD) {
         const now = Date.now();
         if (now - lastStepTime > MIN_STEP_DELAY) {
-            stepCount++;
+
+            // Check for timeout to reset streak
+            if (now - lastStepTime > RESET_DELAY) {
+                consecutiveSteps = 0;
+            }
+
+            consecutiveSteps++;
             lastStepTime = now;
-            updateDisplay();
+
+            if (consecutiveSteps >= STEPS_TO_START_COUNTING) {
+                // If we hit the threshold exactly, add all the buffered steps
+                if (consecutiveSteps === STEPS_TO_START_COUNTING) {
+                    stepCount += STEPS_TO_START_COUNTING;
+                } else {
+                    // Otherwise just add 1
+                    stepCount++;
+                }
+                updateDisplay();
+            }
         }
     }
 }

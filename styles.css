@@ -243,7 +243,8 @@ body {
 
 .history-item {
     background: var(--card-bg);
-    padding: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    /* Reduced vertical padding */
     border-radius: 12px;
     cursor: pointer;
     transition: background 0.2s;
@@ -256,8 +257,10 @@ body {
 .h-info-row {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 0.25rem;
+    align-items: center;
+    /* Changed from baseline to center for better alignment */
+    margin-bottom: 0;
+    /* Removed margin */
 }
 
 .h-date {
@@ -292,7 +295,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.1rem;
+    margin-bottom: 0;
 }
 
 .h-detail-row {
