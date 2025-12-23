@@ -27,12 +27,17 @@ const elements = {
     historyList: document.getElementById('history-list'),
     mapModal: document.getElementById('map-modal'),
     closeMapBtn: document.getElementById('close-map-btn'),
-    mapContainer: document.getElementById('map')
+    closeMapBtn: document.getElementById('close-map-btn'),
+    mapContainer: document.getElementById('map'),
+    exitBtn: document.getElementById('exit-btn')
 };
 
 // Map Global
 let map;
 let polyline;
+
+// Wake Lock Global
+let wakeLock = null;
 
 // --- Initialization ---
 
@@ -54,6 +59,14 @@ function setupEventListeners() {
     elements.closeMapBtn.addEventListener('click', () => {
         elements.mapModal.classList.remove('active');
     });
+
+    // Re-acquire lock if visibility changes (e.g. returns from other tab)
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Exit button
+    if (elements.exitBtn) {
+        elements.exitBtn.addEventListener('click', handleExit);
+    }
 }
 
 function switchView(viewName) {
@@ -92,6 +105,8 @@ function startTracking() {
 }
 
 function beginSession() {
+    requestWakeLock(); // Request Screen Wake Lock
+
     isTracking = true;
     stepCount = 0;
     consecutiveSteps = 0;
@@ -141,6 +156,8 @@ function stopTracking() {
 
     // Save Run
     saveRun();
+
+    releaseWakeLock(); // Release lock
 }
 
 function deleteRun(id) {
@@ -150,6 +167,30 @@ function deleteRun(id) {
     history = history.filter(run => run.id !== id);
     localStorage.setItem('pedometer_runs', JSON.stringify(history));
     renderHistory();
+}
+
+function handleExit() {
+    if (isTracking) {
+        if (!confirm('El seguimiento está activo. ¿Seguro que quieres salir y detenerlo?')) return;
+        stopTracking();
+    }
+
+    // Try to close window
+    try {
+        window.close();
+    } catch (e) {
+        console.log("Cannot close window via script");
+    }
+
+    // Fallback UI
+    document.body.innerHTML = `
+        <div style="display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; text-align:center; padding:2rem; background: var(--bg-color); color: var(--text-main);">
+            <h1 style="margin-bottom:1rem;">Hasta luego</h1>
+            <p>Has salido de la aplicación.</p>
+            <p style="font-size:0.9rem; color: var(--text-muted); margin-top:1rem;">Ya puedes cerrar esta pestaña/ventana.</p>
+            <button onclick="location.reload()" style="margin-top:2rem; padding:1rem 2rem; background:var(--primary); border:none; color:white; border-radius:8px; cursor:pointer;">Volver a entrar</button>
+        </div>
+    `;
 }
 
 // --- Pedometer Algorithm ---
@@ -250,6 +291,41 @@ function requestPermissions() {
     // This is for the manual overlay if needed
     elements.permissionOverlay.classList.add('hidden');
     startTracking();
+}
+
+
+// --- Wake Lock Logic ---
+
+async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('Wake Lock activo');
+
+            wakeLock.addEventListener('release', () => {
+                console.log('Wake Lock liberado');
+            });
+        } catch (err) {
+            console.error(`${err.name}, ${err.message}`);
+        }
+    } else {
+        console.warn('Wake Lock API no soportada en este navegador');
+    }
+}
+
+function releaseWakeLock() {
+    if (wakeLock !== null) {
+        wakeLock.release()
+            .then(() => {
+                wakeLock = null;
+            });
+    }
+}
+
+function handleVisibilityChange() {
+    if (wakeLock !== null && document.visibilityState === 'visible') {
+        requestWakeLock();
+    }
 }
 
 

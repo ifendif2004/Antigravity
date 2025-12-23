@@ -48,6 +48,11 @@ body {
     background: transparent;
 }
 
+.header-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
 .app-header h1 {
     font-size: 1.5rem;
     font-weight: 700;
@@ -63,6 +68,12 @@ body {
     color: var(--text-main);
     cursor: pointer;
     padding: 8px;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Views */

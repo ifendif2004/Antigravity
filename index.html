@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -9,20 +10,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
     <!-- Google Maps API - PLACEHOLDER KEY -->
     <!-- Reemplaza YOUR_GOOGLE_MAPS_API_KEY con tu clave real -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap"></script>
 </head>
+
 <body>
     <div id="app">
         <!-- Header -->
         <header class="app-header">
             <h1>Pasos<span class="highlight">Pro</span></h1>
-            <button id="view-history-btn" class="icon-btn" aria-label="Ver Historial">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-            </button>
+            <div class="header-actions">
+                <button id="exit-btn" class="icon-btn" aria-label="Salir">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </button>
+                <button id="view-history-btn" class="icon-btn" aria-label="Ver Historial">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
+            </div>
         </header>
 
         <!-- Main Tracker View -->
@@ -32,7 +47,7 @@
                     <span class="label">PASOS</span>
                     <span id="step-count" class="value">0</span>
                 </div>
-                
+
                 <div class="secondary-stats">
                     <div class="stat-box">
                         <span class="label">DISTANCIA</span>
@@ -63,7 +78,7 @@
                 <button id="back-to-tracker-btn" class="text-btn">← Volver</button>
                 <h2>Historial</h2>
             </div>
-            
+
             <div id="history-list" class="history-list">
                 <!-- History items will be injected here -->
                 <div class="empty-state">No hay recorridos guardados aún.</div>
@@ -100,5 +115,15 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('SW registrado', reg))
+                    .catch(err => console.log('SW fallo', err));
+            });
+        }
+    </script>
 </body>
+
 </html>
